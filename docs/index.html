@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heygen vs Tencent – API Pricing Comparison</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #06b6d4;
+      --good: #22c55e;
+      --warn: #fbbf24;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #0b0f14 0%, #0b0f14 40%, #0e1420 100%);
+      color: var(--text);
+    }
+    .container { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+    h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: 0.2px; }
+    .sub { color: var(--muted); margin-top: 0; margin-bottom: 24px; }
+    .panel { background: rgba(17,24,39,.8); border: 1px solid rgba(255,255,255,.06); box-shadow: 0 10px 30px rgba(0,0,0,.35); border-radius: 16px; padding: 18px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+    @media (max-width: 860px){ .col-6 { grid-column: span 12; } }
+    label { display:block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    input[type="range"] { width: 100%; }
+    .row { display:flex; gap: 14px; align-items:center; flex-wrap: wrap; }
+    .chip { display:inline-flex; align-items:center; gap:8px; padding: 8px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); font-size:13px; color: var(--text); cursor: default; }
+    .toggle { display:inline-flex; border:1px solid rgba(255,255,255,.08); border-radius:10px; overflow:hidden; }
+    .toggle button { background: transparent; color: var(--text); border: none; padding: 8px 12px; cursor: pointer; font-size: 13px; }
+    .toggle button.active { background: rgba(6,182,212,.15); color: #a6f4ff; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 14px; text-align: left; border-bottom: 1px dashed rgba(255,255,255,.08); vertical-align: top; }
+    th { font-weight: 600; color: #cbd5e1; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+    td small { color: var(--muted); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pill { padding: 4px 8px; border-radius: 999px; background: rgba(6,182,212,.15); color:#a6f4ff; font-size: 12px; }
+    .delta-good { color: var(--good); font-weight: 600; }
+    .delta-warn { color: var(--warn); font-weight: 600; }
+    .muted { color: var(--muted); }
+    .footer { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .note { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Heygen vs Tencent – API Pricing (Interactive Avatar)</h1>
+    <p class="sub">Web sheet for your kiosk/POC. Adjust the toggles below to instantly see monthly totals and break-even points. Defaults assume a single 24/7 session (one concurrency path).</p>
+
+    <div class="panel grid">
+      <div class="col-6">
+        <label>Month length</label>
+        <div class="toggle" role="tablist" aria-label="Month length">
+          <button id="m30" class="active" onclick="setDays(30)">30 days</button>
+          <button id="m31" onclick="setDays(31)">31 days</button>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <label>Concurrency (simultaneous sessions)</label>
+        <div class="row">
+          <input id="conc" type="range" min="1" max="500" step="1" value="1" oninput="update()" />
+          <div class="chip"><span id="concVal">1</span> paths</div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <label>Talk time (Heygen bills only speaking time)</label>
+        <div class="row">
+          <input id="talk" type="range" min="0" max="100" step="5" value="100" oninput="update()" />
+          <div class="chip"><span id="talkPct">100%</span> speaking</div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <label>Tencent Interactive (per concurrency path)</label>
+        <div class="row">
+          <div class="toggle" role="tablist" aria-label="Tencent tier">
+            <button id="t2d" class="active" onclick="setTencent('2D')">2D – $500/mo</button>
+            <button id="t3d" onclick="setTencent('3D')">3D – $800/mo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <label>Heygen plan</label>
+        <div class="row">
+          <div class="toggle" role="tablist" aria-label="Heygen tier">
+            <button id="hpro" class="active" onclick="setHeygen('pro')">Pro – $0.198/min</button>
+            <button id="hscale" onclick="setHeygen('scale')">Scale – $0.10/min</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 note">
+        <span class="kbd">Assumptions</span> Tencent is flat monthly per concurrent path. Heygen uses credits that translate to per-minute speech billing; silence is not billed. Figures are USD.
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <table>
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>What’s billed</th>
+            <th class="num">Unit price</th>
+            <th class="num">Billed minutes (total)</th>
+            <th class="num">Monthly total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div>Tencent <span id="tenLabel" class="pill">2D</span></div>
+              <small>Interactive Digital Human</small>
+            </td>
+            <td><span id="tenBill">Concurrency × flat</span></td>
+            <td class="num" id="tenUnit">$500.00 / path / mo</td>
+            <td class="num muted" id="tenMins">—</td>
+            <td class="num" id="tenCost">$500.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div>Heygen <span id="heyLabel" class="pill">Pro</span></div>
+              <small>Interactive streaming (speaking time only)</small>
+            </td>
+            <td>Concurrency × speaking minutes</td>
+            <td class="num" id="heyUnit">$0.198 / min</td>
+            <td class="num" id="heyMins">43,200</td>
+            <td class="num" id="heyCost">$8,553.60</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3">Break-even per path (Tencent vs Heygen)</th>
+            <td class="num" id="beMins">2,525</td>
+            <td class="num" id="beNote"><span class="delta-good">Tencent wins above break-even</span></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="panel col-6">
+        <h3 style="margin:0 0 8px">Interpretation</h3>
+        <p class="muted" style="margin:0">At high utilization (near 24/7 speaking), Tencent’s flat monthly fee scales linearly with concurrency and is dramatically cheaper than per-minute billing. As talk-time ratio drops, Heygen costs fall proportionally and can undercut Tencent for low-usage fleets.</p>
+      </div>
+      <div class="panel col-6">
+        <h3 style="margin:0 0 8px">Reference pricing</h3>
+        <ul style="margin:0; padding-left: 18px; line-height:1.7">
+          <li>Heygen API: credits ⇒ speaking minutes (e.g., 1 credit = 5 minutes). Pro ≈ $0.198/min, Scale ≈ $0.10/min. <a href="https://www.heygen.com/api-pricing" target="_blank" rel="noopener">Official page</a>.</li>
+          <li>Tencent IVH Interactive: monthly per concurrency path (2D: $500, 3D: $800). See Tencent Cloud “AI Digital Human” pricing/guide.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer" style="margin-top:18px">Tip: For your Jewel kiosk POC, start with 2D Tencent for fixed-cost lanes, and use Heygen for pre-rendered explainers (cheaper per rendered minute). Tune <span class="kbd">Talk time</span> & <span class="kbd">Concurrency</span> to match footfall.</p>
+  </div>
+
+  <script>
+    const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+    const fmtInt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+
+    let days = 30;           // 30 or 31
+    let talkPct = 100;       // 0..100
+    let tencentTier = '2D';  // '2D' or '3D'
+    let heygenTier = 'pro';  // 'pro' or 'scale'
+    let concurrency = 1;     // 1..500
+
+    const TEN_PRICES = { '2D': 500, '3D': 800 };
+    const HEY_RATES = { 'pro': 0.198, 'scale': 0.10 };
+
+    function setDays(d){
+      days = d;
+      document.getElementById('m30').classList.toggle('active', d===30);
+      document.getElementById('m31').classList.toggle('active', d===31);
+      update();
+    }
+    function setTencent(t){
+      tencentTier = t;
+      document.getElementById('t2d').classList.toggle('active', t==='2D');
+      document.getElementById('t3d').classList.toggle('active', t==='3D');
+      update();
+    }
+    function setHeygen(h){
+      heygenTier = h;
+      document.getElementById('hpro').classList.toggle('active', h==='pro');
+      document.getElementById('hscale').classList.toggle('active', h==='scale');
+      update();
+    }
+
+    function update(){
+      // inputs
+      const talk = document.getElementById('talk');
+      talkPct = parseInt(talk.value, 10);
+      document.getElementById('talkPct').textContent = talkPct + '%';
+
+      const concEl = document.getElementById('conc');
+      concurrency = parseInt(concEl.value, 10);
+      document.getElementById('concVal').textContent = concurrency.toString();
+
+      const minutesPerSession = days * 24 * 60; // minutes in the month per session
+      const heyMinsTotal = Math.round(minutesPerSession * (talkPct / 100) * concurrency);
+
+      const tenUnit = TEN_PRICES[tencentTier];
+      const tenCost = tenUnit * concurrency;
+      const heyRate = HEY_RATES[heygenTier];
+      const heyCost = heyMinsTotal * heyRate;
+
+      // DOM
+      document.getElementById('tenLabel').textContent = tencentTier;
+      document.getElementById('tenUnit').textContent = fmt.format(tenUnit) + ' / path / mo';
+      document.getElementById('tenCost').textContent = fmt.format(tenCost);
+      document.getElementById('tenMins').textContent = '—';
+      document.getElementById('tenBill').textContent = `${concurrency} × flat`;
+
+      document.getElementById('heyLabel').textContent = (heygenTier === 'pro' ? 'Pro' : 'Scale');
+      document.getElementById('heyUnit').textContent = fmt.format(heyRate) + ' / min';
+      document.getElementById('heyMins').textContent = fmtInt.format(heyMinsTotal);
+      document.getElementById('heyCost').textContent = fmt.format(heyCost);
+
+      // Break-even per path (independent of concurrency): Tencent flat / Heygen per-minute
+      const be = tenUnit / heyRate; // minutes of speaking per month per path
+      document.getElementById('beMins').textContent = fmtInt.format(Math.ceil(be));
+
+      const talkRatio = talkPct / 100;
+      const heyCostPerPath = minutesPerSession * talkRatio * heyRate;
+      const note = (heyCostPerPath >= tenUnit)
+        ? '<span class="delta-good">Tencent cheaper above break-even</span>'
+        : '<span class="delta-warn">Heygen cheaper below break-even</span>';
+      document.getElementById('beNote').innerHTML = note;
+    }
+
+    // initial paint
+    update();
+  </script>
+</body>
+</html>
