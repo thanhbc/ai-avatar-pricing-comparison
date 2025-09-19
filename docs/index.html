@@ -13,6 +13,7 @@
       --accent: #06b6d4;
       --good: #22c55e;
       --warn: #fbbf24;
+      --bad: #ef4444;
     }
     html, body { height: 100%; }
     body {
@@ -20,22 +21,57 @@
       background: linear-gradient(180deg, #0b0f14 0%, #0b0f14 40%, #0e1420 100%);
       color: var(--text);
     }
-    .container { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 32px 20px 80px; }
     h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: 0.2px; }
     .sub { color: var(--muted); margin-top: 0; margin-bottom: 24px; }
     .panel { background: rgba(17,24,39,.8); border: 1px solid rgba(255,255,255,.06); box-shadow: 0 10px 30px rgba(0,0,0,.35); border-radius: 16px; padding: 18px; }
     .grid { display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); }
+    .col-4 { grid-column: span 4; }
     .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
     .col-12 { grid-column: span 12; }
-    @media (max-width: 860px){ .col-6 { grid-column: span 12; } }
+    @media (max-width: 980px){ .col-4, .col-6, .col-8 { grid-column: span 12; } }
     label { display:block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-    input[type="range"] { width: 100%; appearance: none; height: 6px; background: rgba(255,255,255,.18); border-radius: 999px; outline: none; }
-    input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: rgba(255,255,255,.18); border-radius: 999px; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid rgba(255,255,255,.85); margin-top: -6px; box-shadow: 0 2px 6px rgba(0,0,0,.3); cursor: pointer; }
-    input[type="range"]::-moz-range-track { height: 6px; background: rgba(255,255,255,.18); border-radius: 999px; }
-    input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid rgba(255,255,255,.85); box-shadow: 0 2px 6px rgba(0,0,0,.3); cursor: pointer; }
-    input[type="range"]:hover::-webkit-slider-runnable-track { background: rgba(255,255,255,.24); }
-    input[type="range"]:hover::-moz-range-track { background: rgba(255,255,255,.24); }
+    input[type="range"] { 
+      width: 100%; 
+      height: 8px;
+      background: rgba(255,255,255,.1);
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(6,182,212,.3);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(6,182,212,.3);
+    }
+    input[type="range"]::-webkit-slider-track {
+      background: rgba(255,255,255,.1);
+      height: 8px;
+      border-radius: 4px;
+    }
+    input[type="range"]::-moz-range-track {
+      background: rgba(255,255,255,.1);
+      height: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+    select { width: 100%; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); color: var(--text); }
     .row { display:flex; gap: 14px; align-items:center; flex-wrap: wrap; }
     .chip { display:inline-flex; align-items:center; gap:8px; padding: 8px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); font-size:13px; color: var(--text); cursor: default; }
     .toggle { display:inline-flex; border:1px solid rgba(255,255,255,.08); border-radius:10px; overflow:hidden; }
@@ -51,20 +87,24 @@
     .pill { padding: 4px 8px; border-radius: 999px; background: rgba(6,182,212,.15); color:#a6f4ff; font-size: 12px; }
     .delta-good { color: var(--good); font-weight: 600; }
     .delta-warn { color: var(--warn); font-weight: 600; }
+    .delta-bad { color: var(--bad); font-weight: 600; }
     .muted { color: var(--muted); }
     .footer { color: var(--muted); font-size: 12px; line-height: 1.5; }
     a { color: #7dd3fc; text-decoration: none; }
     a:hover { text-decoration: underline; }
     .note { font-size: 13px; color: var(--muted); }
+    .split { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .check { display:flex; align-items:center; gap:8px; }
+    .check input { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Heygen vs Tencent – API Pricing (Interactive Avatar)</h1>
-    <p class="sub">Web sheet for your kiosk/POC. Adjust the toggles below to instantly see monthly totals and break-even points. Defaults assume a single 24/7 session (one concurrency path).</p>
+    <p class="sub">Now includes Tencent add‑ons from your quote: <b>ASR</b>, <b>Conversational AI</b>, <b>TRTC base + usage by resolution</b>, and <b>avatar subscription</b>. Use the controls to model 24/7 lanes or low‑talk kiosks.</p>
 
     <div class="panel grid">
-      <div class="col-6">
+      <div class="col-4">
         <label>Month length</label>
         <div class="toggle" role="tablist" aria-label="Month length">
           <button id="m30" class="active" onclick="setDays(30)">30 days</button>
@@ -72,7 +112,7 @@
         </div>
       </div>
 
-      <div class="col-6">
+      <div class="col-4">
         <label>Concurrency (simultaneous sessions)</label>
         <div class="row">
           <input id="conc" type="range" min="1" max="500" step="1" value="1" oninput="update()" />
@@ -80,7 +120,7 @@
         </div>
       </div>
 
-      <div class="col-6">
+      <div class="col-4">
         <label>Talk time (Heygen bills only speaking time)</label>
         <div class="row">
           <input id="talk" type="range" min="0" max="100" step="5" value="100" oninput="update()" />
@@ -88,28 +128,63 @@
         </div>
       </div>
 
-      <div class="col-6">
+      <div class="col-4">
         <label>Tencent Interactive (per concurrency path)</label>
-        <div class="row">
-          <div class="toggle" role="tablist" aria-label="Tencent tier">
-            <button id="t2d" class="active" onclick="setTencent('2D')">2D – $500/mo</button>
-            <button id="t3d" onclick="setTencent('3D')">3D – $800/mo</button>
-          </div>
+        <div class="toggle" role="tablist" aria-label="Tencent tier">
+          <button id="t2d" class="active" onclick="setTencent('2D')">2D – $500/mo</button>
+          <button id="t3d" onclick="setTencent('3D')">3D – $800/mo</button>
         </div>
       </div>
 
-      <div class="col-6">
-        <label>Heygen plan</label>
-        <div class="row">
-          <div class="toggle" role="tablist" aria-label="Heygen tier">
-            <button id="hpro" class="active" onclick="setHeygen('pro')">Pro – $0.198/min</button>
-            <button id="hscale" onclick="setHeygen('scale')">Scale – $0.10/min</button>
-          </div>
+      <div class="col-4">
+        <label>Tencent Avatar Solution</label>
+        <select id="tenAvatar" onchange="update()">
+          <optgroup label="Solution A: Customize New Avatar">
+            <option value="studio-custom">Studio Custom – $1,000 one-time</option>
+            <option value="instant-custom">Instant Custom – $200 one-time</option>
+          </optgroup>
+          <optgroup label="Solution B: Rent Existing Avatar">
+            <option value="3d-realistic">3D Realistic – $40,000/year</option>
+            <option value="studio">Studio Subscription – $60/mo</option>
+            <option value="instant">Instant Subscription – $25/mo</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="custom">Custom 2D – $0/mo (year 1)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="col-4">
+        <label>TRTC Resolution (usage billed per 1,000 minutes)</label>
+        <select id="trtcRes" onchange="update()">
+          <option value="audio">Audio – $0.99</option>
+          <option value="720p" selected>HD 720p – $3.99</option>
+          <option value="1080p">FullHD 1080p – $8.99</option>
+          <option value="2k">2K – $15.99</option>
+          <option value="4k">4K – $35.99</option>
+        </select>
+      </div>
+
+      <div class="col-4">
+        <label>Heygen Tier</label>
+        <div class="toggle" role="tablist" aria-label="Heygen tier">
+          <button id="hpro" class="active" onclick="setHeygen('pro')">Pro – $0.198/min</button>
+          <button id="hscale" onclick="setHeygen('scale')">Scale – $0.10/min</button>
         </div>
       </div>
+
+      <div class="col-8">
+        <label>Include Tencent add‑ons</label>
+        <div class="split">
+          <label class="check"><input id="ckAsr" type="checkbox" checked onchange="update()"/> <span>ASR $1.40 / hour (billed on speaking minutes)</span></label>
+          <label class="check"><input id="ckCai" type="checkbox" checked onchange="update()"/> <span>Conversational AI $0.01 / min (speaking minutes)</span></label>
+          <label class="check"><input id="ckTrtcBase" type="checkbox" checked onchange="update()"/> <span>TRTC base $49.50 / account / mo</span></label>
+        </div>
+      </div>
+
 
       <div class="col-12 note">
-        <span class="kbd">Assumptions</span> Tencent is flat monthly per concurrent path. Heygen uses credits that translate to per-minute speech billing; silence is not billed. Figures are USD.
+        Tencent requires TRTC transport; <b>TRTC usage</b> is billed on <i>total streaming minutes</i> per path (even during silence). <b>ASR</b> and <b>CAI</b> are billed on <i>speaking minutes</i>. Avatar plan fee is per path. Heygen totals reflect API speaking‑minute pricing only.
       </div>
     </div>
 
@@ -120,7 +195,7 @@
             <th>Vendor</th>
             <th>What’s billed</th>
             <th class="num">Unit price</th>
-            <th class="num">Billed minutes (total)</th>
+            <th class="num">Billed minutes</th>
             <th class="num">Monthly total</th>
           </tr>
         </thead>
@@ -128,19 +203,23 @@
           <tr>
             <td>
               <div>Tencent <span id="tenLabel" class="pill">2D</span></div>
-              <small>Interactive Digital Human</small>
+              <small>Interactive Digital Human + TRTC</small>
             </td>
-            <td><span id="tenBill">Concurrency × flat</span></td>
-            <td class="num" id="tenUnit">$500.00 / path / mo</td>
-            <td class="num muted" id="tenMins">—</td>
-            <td class="num" id="tenCost">$500.00</td>
+            <td>
+              <div id="tenBill1">Concurrency × (Path + Avatar)</div>
+              <div id="tenBill2">TRTC usage (resolution) + base</div>
+              <div id="tenBill3">ASR + CAI (speaking minutes)</div>
+            </td>
+            <td class="num" id="tenUnit">$500 + $60 / path / mo</td>
+            <td class="num" id="tenMins">Total: <span id="minsTotal">43,200</span><br/>Speak: <span id="minsSpeak">43,200</span></td>
+            <td class="num" id="tenCost">$2,268.80</td>
           </tr>
           <tr>
             <td>
               <div>Heygen <span id="heyLabel" class="pill">Pro</span></div>
               <small>Interactive streaming (speaking time only)</small>
             </td>
-            <td>Concurrency × speaking minutes</td>
+            <td>Speaking minutes</td>
             <td class="num" id="heyUnit">$0.198 / min</td>
             <td class="num" id="heyMins">43,200</td>
             <td class="num" id="heyCost">$8,553.60</td>
@@ -148,9 +227,9 @@
         </tbody>
         <tfoot>
           <tr>
-            <th colspan="3">Break-even per path (Tencent vs Heygen)</th>
-            <td class="num" id="beMins">2,525</td>
-            <td class="num" id="beNote"><span class="delta-good">Tencent wins above break-even</span></td>
+            <th colspan="3">Break‑even per path at current settings</th>
+            <td class="num" id="beText">≈ <span id="bePct">—</span> talk‑time</td>
+            <td class="num" id="beNote"><span class="delta-good">Tencent cheaper above break‑even</span></td>
           </tr>
         </tfoot>
       </table>
@@ -159,18 +238,22 @@
     <div class="grid" style="margin-top:16px">
       <div class="panel col-6">
         <h3 style="margin:0 0 8px">Interpretation</h3>
-        <p class="muted" style="margin:0">At high utilization (near 24/7 speaking), Tencent’s flat monthly fee scales linearly with concurrency and is dramatically cheaper than per-minute billing. As talk-time ratio drops, Heygen costs fall proportionally and can undercut Tencent for low-usage fleets.</p>
+        <p class="muted" style="margin:0">This model treats <b>TRTC</b> as always-on transport (billed on total streaming minutes), while <b>ASR</b> and <b>CAI</b> scale with actual speaking time. Result: Tencent has a significant fixed baseline (Path + TRTC), so the break‑even vs Heygen depends strongly on your talk‑time ratio and chosen resolution.</p>
       </div>
       <div class="panel col-6">
-        <h3 style="margin:0 0 8px">Reference pricing</h3>
+        <h3 style="margin:0 0 8px">Reference </h3>
         <ul style="margin:0; padding-left: 18px; line-height:1.7">
-          <li>Heygen API: credits ⇒ speaking minutes (e.g., 1 credit = 5 minutes). Pro ≈ $0.198/min, Scale ≈ $0.10/min. <a href="https://www.heygen.com/api-pricing" target="_blank" rel="noopener">Official page</a>.</li>
-          <li>Tencent IVH Interactive: monthly per concurrency path (2D: $500, 3D: $800). See Tencent Cloud “AI Digital Human” pricing/guide.</li>
+          <li>Path: 2D $500 / mo · 3D $800 / mo (per concurrency)</li>
+          <li><b>Solution A (Customize):</b> Studio Custom $1,000 one-time · Instant Custom $200 one-time</li>
+          <li><b>Solution B (Rent):</b> 3D Realistic $40,000 / year · Studio $60 / mo · Instant $25 / mo</li>
+          <li>TRTC: Base $49.50 / account / mo; Usage per 1,000 mins → Audio $0.99 · 720p $3.99 · 1080p $8.99 · 2K $15.99 · 4K $35.99</li>
+          <li>ASR: $1.40 / hour (=$0.0233 / min) · CAI: $0.01 / min</li>
+          <li>Heygen: Pro ≈ $0.198 / min · Scale ≈ $0.10 / min (speaking time)</li>
         </ul>
       </div>
     </div>
 
-    <p class="footer" style="margin-top:18px">Tip: For your Jewel kiosk POC, start with 2D Tencent for fixed-cost lanes, and use Heygen for pre-rendered explainers (cheaper per rendered minute). Tune <span class="kbd">Talk time</span> & <span class="kbd">Concurrency</span> to match footfall.</p>
+    <p class="footer" style="margin-top:18px">Note: If you bring your own STT/LLM, uncheck <b>ASR</b> and/or <b>CAI</b>. If you deliver via a different transport, uncheck <b>TRTC base</b> and set resolution to <i>Audio</i> to approximate audio‑only lanes.</p>
   </div>
 
   <script>
@@ -183,7 +266,32 @@
     let heygenTier = 'pro';  // 'pro' or 'scale'
     let concurrency = 1;     // 1..500
 
-    const TEN_PRICES = { '2D': 500, '3D': 800 };
+    const TEN_PATH = { '2D': 500, '3D': 800 };
+    const TEN_AVATAR = { 
+      'studio': 60, 
+      'instant': 25, 
+      'studio-custom': 1000, 
+      'instant-custom': 200, 
+      '3d-realistic': 40000,
+      'custom': 0 
+    };
+    const TEN_AVATAR_ONETIME = { 
+      'studio': false, 
+      'instant': false, 
+      'studio-custom': true, 
+      'instant-custom': true, 
+      '3d-realistic': true,
+      'custom': false 
+    };
+    const TEN_AVATAR_YEARLY = { 
+      'studio': false, 
+      'instant': false, 
+      'studio-custom': false, 
+      'instant-custom': false, 
+      '3d-realistic': true,
+      'custom': false 
+    };
+    const TRTC_RATE_PER_1000 = { 'audio': 0.99, '720p': 3.99, '1080p': 8.99, '2k': 15.99, '4k': 35.99 };
     const HEY_RATES = { 'pro': 0.198, 'scale': 0.10 };
 
     function setDays(d){
@@ -206,7 +314,7 @@
     }
 
     function update(){
-      // inputs
+      // input pulls
       const talk = document.getElementById('talk');
       talkPct = parseInt(talk.value, 10);
       document.getElementById('talkPct').textContent = talkPct + '%';
@@ -215,40 +323,126 @@
       concurrency = parseInt(concEl.value, 10);
       document.getElementById('concVal').textContent = concurrency.toString();
 
-      const minutesPerSession = days * 24 * 60; // minutes in the month per session
-      const heyMinsTotal = Math.round(minutesPerSession * (talkPct / 100) * concurrency);
+      const avatarSel = document.getElementById('tenAvatar').value;
+      const trtcRes = document.getElementById('trtcRes').value;
+      const includeAsr = document.getElementById('ckAsr').checked;
+      const includeCai = document.getElementById('ckCai').checked;
+      const includeTrtcBase = document.getElementById('ckTrtcBase').checked;
 
-      const tenUnit = TEN_PRICES[tencentTier];
-      const tenCost = tenUnit * concurrency;
+      // minutes
+      const minutesPerSession = days * 24 * 60; // total minutes in the month per session (always-on)
+      const minutesTotal = minutesPerSession * concurrency;
+      const minutesSpeak = Math.round(minutesPerSession * (talkPct / 100) * concurrency);
+
+      // --- Tencent costs ---
+      const pathUnit = TEN_PATH[tencentTier];
+      const avatarUnit = TEN_AVATAR[avatarSel];
+      const isAvatarOneTime = TEN_AVATAR_ONETIME[avatarSel];
+      const isAvatarYearly = TEN_AVATAR_YEARLY[avatarSel];
+      const trtcRatePerMin = (TRTC_RATE_PER_1000[trtcRes] || 0) / 1000.0;
+      const asrPerMin = includeAsr ? (1.40 / 60.0) : 0; // $/min
+      const caiPerMin = includeCai ? 0.01 : 0;          // $/min
+
+      // Handle avatar fees based on billing type
+      let avatarMonthlyCost = 0;
+      let avatarOneTimeCost = 0;
+      
+      if (isAvatarYearly) {
+        // Yearly billing: amortize over 12 months
+        avatarMonthlyCost = avatarUnit / 12;
+        avatarOneTimeCost = 0;
+      } else if (isAvatarOneTime) {
+        // One-time billing
+        avatarMonthlyCost = 0;
+        avatarOneTimeCost = avatarUnit * concurrency;
+      } else {
+        // Monthly billing
+        avatarMonthlyCost = avatarUnit;
+        avatarOneTimeCost = 0;
+      }
+
+      const tenFixedPerPath = pathUnit + avatarMonthlyCost + (minutesPerSession * trtcRatePerMin); // per path excluding base
+      const tenFixedFleet = tenFixedPerPath * concurrency + (includeTrtcBase ? 49.50 : 0);
+      const tenVariableFleet = minutesSpeak * (asrPerMin + caiPerMin);
+      const tenTotal = tenFixedFleet + tenVariableFleet + avatarOneTimeCost;
+
+      // --- Heygen costs ---
       const heyRate = HEY_RATES[heygenTier];
-      const heyCost = heyMinsTotal * heyRate;
+      const heyMins = minutesSpeak; // billed on speaking minutes only
+      const heyTotal = heyMins * heyRate;
 
-      // DOM
+      // DOM: Tencent row
       document.getElementById('tenLabel').textContent = tencentTier;
-      document.getElementById('tenUnit').textContent = fmt.format(tenUnit) + ' / path / mo';
-      document.getElementById('tenCost').textContent = fmt.format(tenCost);
-      document.getElementById('tenMins').textContent = '—';
-      document.getElementById('tenBill').textContent = `${concurrency} × flat`;
+      
+      // Update unit price display based on avatar type
+      let unitDisplay = fmt.format(pathUnit) + ' / path / mo';
+      if (isAvatarYearly) {
+        unitDisplay += ` + Avatar ${fmt.format(avatarUnit)} / year`;
+      } else if (isAvatarOneTime) {
+        unitDisplay += ` + Avatar ${fmt.format(avatarUnit)} one-time`;
+      } else {
+        unitDisplay += ` + Avatar ${fmt.format(avatarUnit)} / mo`;
+      }
+      document.getElementById('tenUnit').textContent = unitDisplay;
+      
+      const tenMinsEl = document.getElementById('tenMins');
+      const minsTotalEl = document.getElementById('minsTotal');
+      const minsSpeakEl = document.getElementById('minsSpeak');
+      
+      if (tenMinsEl) tenMinsEl.innerHTML = 'Total: ' + fmtInt.format(minutesTotal) + '<br/>Speak: ' + fmtInt.format(minutesSpeak);
+      if (minsTotalEl) minsTotalEl.textContent = fmtInt.format(minutesTotal);
+      if (minsSpeakEl) minsSpeakEl.textContent = fmtInt.format(minutesSpeak);
+      
+      // Update billing description
+      let bill1Text = `${concurrency} × Path ${fmt.format(pathUnit)}`;
+      if (isAvatarYearly) {
+        bill1Text += ` + Avatar ${fmt.format(avatarUnit)} / year`;
+      } else if (isAvatarOneTime) {
+        bill1Text += ` + Avatar ${fmt.format(avatarUnit)} one-time`;
+      } else {
+        bill1Text += ` + Avatar ${fmt.format(avatarUnit)} / mo`;
+      }
+      document.getElementById('tenBill1').textContent = bill1Text;
+      const trtcDesc = `${trtcRes.toUpperCase()} @ ${fmt.format(TRTC_RATE_PER_1000[trtcRes] || 0)} / 1000 min` + (includeTrtcBase ? ' + Base $49.50' : '');
+      document.getElementById('tenBill2').textContent = `TRTC usage: ${trtcDesc}`;
+      const asrTxt = includeAsr ? `ASR ${fmt.format(asrPerMin)} / min` : 'ASR off';
+      const caiTxt = includeCai ? `CAI $0.01 / min` : 'CAI off';
+      document.getElementById('tenBill3').textContent = `${asrTxt} · ${caiTxt}`;
+      document.getElementById('tenCost').textContent = fmt.format(tenTotal);
 
-      document.getElementById('heyLabel').textContent = (heygenTier === 'pro' ? 'Pro' : 'Scale');
-      document.getElementById('heyUnit').textContent = fmt.format(heyRate) + ' / min';
-      document.getElementById('heyMins').textContent = fmtInt.format(heyMinsTotal);
-      document.getElementById('heyCost').textContent = fmt.format(heyCost);
+      // DOM: Heygen row
+      const heyLabelEl = document.getElementById('heyLabel');
+      const heyUnitEl = document.getElementById('heyUnit');
+      const heyMinsEl = document.getElementById('heyMins');
+      const heyCostEl = document.getElementById('heyCost');
+      
+      if (heyLabelEl) heyLabelEl.textContent = (heygenTier === 'pro' ? 'Pro' : 'Scale');
+      if (heyUnitEl) heyUnitEl.textContent = fmt.format(heyRate) + ' / min';
+      if (heyMinsEl) heyMinsEl.textContent = fmtInt.format(heyMins);
+      if (heyCostEl) heyCostEl.textContent = fmt.format(heyTotal);
 
-      // Break-even per path (independent of concurrency): Tencent flat / Heygen per-minute
-      const be = tenUnit / heyRate; // minutes of speaking per month per path
-      document.getElementById('beMins').textContent = fmtInt.format(Math.ceil(be));
+      // Break-even per path (solve for talk % where Heygen per-path = Tencent per-path)
+      const fixedPerPath = pathUnit + avatarMonthlyCost + (minutesPerSession * trtcRatePerMin) + (includeTrtcBase ? (49.50 / Math.max(concurrency,1)) : 0);
+      const avatarOneTimePerPath = isAvatarOneTime ? avatarUnit : 0;
+      const denom = (heyRate - asrPerMin - caiPerMin) * minutesPerSession; // $/min * mins
+      let bePct = null;
+      if (denom > 0) {
+        bePct = (fixedPerPath / denom) * 100; // percentage
+      }
+      const bePctDisplay = (bePct === null || !isFinite(bePct) || bePct < 0) ? '—' : (bePct > 100 ? '>100%' : bePct.toFixed(1) + '%');
+      document.getElementById('bePct').textContent = bePctDisplay;
 
-      const talkRatio = talkPct / 100;
-      const heyCostPerPath = minutesPerSession * talkRatio * heyRate;
-      const note = (heyCostPerPath >= tenUnit)
-        ? '<span class="delta-good">Tencent cheaper above break-even</span>'
-        : '<span class="delta-warn">Heygen cheaper below break-even</span>';
-      document.getElementById('beNote').innerHTML = note;
+      // Note about who is cheaper at current settings
+      let noteHtml = '';
+      if (heyTotal >= tenTotal) noteHtml = '<span class="delta-good">Tencent cheaper at current settings</span>';
+      else noteHtml = '<span class="delta-warn">Heygen cheaper at current settings</span>';
+      document.getElementById('beNote').innerHTML = noteHtml;
     }
 
     // initial paint
-    update();
+    document.addEventListener('DOMContentLoaded', function() {
+      update();
+    });
   </script>
 </body>
 </html>
