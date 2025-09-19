@@ -422,13 +422,24 @@
       if (heyCostEl) heyCostEl.textContent = fmt.format(heyTotal);
 
       // Break-even per path (solve for talk % where Heygen per-path = Tencent per-path)
+      // Tencent per-path cost = fixedPerPath + (talk% * minutesPerSession * (asrPerMin + caiPerMin))
+      // Heygen per-path cost = talk% * minutesPerSession * heyRate
+      // Solve: fixedPerPath + (talk% * minutesPerSession * (asrPerMin + caiPerMin)) = talk% * minutesPerSession * heyRate
+      // Rearranged: talk% = fixedPerPath / (minutesPerSession * (heyRate - asrPerMin - caiPerMin))
+      
       const fixedPerPath = pathUnit + avatarMonthlyCost + (minutesPerSession * trtcRatePerMin) + (includeTrtcBase ? (49.50 / Math.max(concurrency,1)) : 0);
       const avatarOneTimePerPath = isAvatarOneTime ? avatarUnit : 0;
-      const denom = (heyRate - asrPerMin - caiPerMin) * minutesPerSession; // $/min * mins
+      
+      // Add one-time avatar cost to fixed costs (amortized over the month)
+      const totalFixedPerPath = fixedPerPath + avatarOneTimePerPath;
+      
+      const rateDifference = heyRate - asrPerMin - caiPerMin; // Heygen rate minus Tencent variable rate
       let bePct = null;
-      if (denom > 0) {
-        bePct = (fixedPerPath / denom) * 100; // percentage
+      
+      if (rateDifference > 0 && minutesPerSession > 0) {
+        bePct = (totalFixedPerPath / (minutesPerSession * rateDifference)) * 100; // percentage
       }
+      
       const bePctDisplay = (bePct === null || !isFinite(bePct) || bePct < 0) ? '—' : (bePct > 100 ? '>100%' : bePct.toFixed(1) + '%');
       document.getElementById('bePct').textContent = bePctDisplay;
 
